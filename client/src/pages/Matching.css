@@ -1,0 +1,209 @@
+.matching {
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+.title-icon {
+  font-size: 2.5rem;
+}
+
+.title-text {
+  background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.match-notification {
+  background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.match-notification h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.card-container {
+  max-width: 500px;
+  width: 100%;
+}
+
+.swipe-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  margin-bottom: 2rem;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.card-image {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8rem;
+  color: white;
+  font-weight: bold;
+}
+
+.card-content {
+  padding: 2rem;
+}
+
+.card-name {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.card-location {
+  color: #666;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.card-bio {
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.card-languages,
+.card-intentions,
+.card-interests {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.card-languages strong,
+.card-intentions strong,
+.card-interests strong {
+  color: #333;
+}
+
+.swipe-actions {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.swipe-button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pass-button {
+  background: white;
+  color: #e91e63;
+  border: 3px solid #e91e63;
+}
+
+.pass-button:hover {
+  transform: scale(1.1);
+  background: #fee;
+}
+
+.like-button {
+  background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+  color: white;
+}
+
+.like-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+}
+
+.no-more-candidates {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.no-more-candidates h2 {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.no-more-candidates p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .card-image {
+    height: 300px;
+  }
+
+  .swipe-button {
+    width: 70px;
+    height: 70px;
+    font-size: 0.8rem;
+  }
+}
+
+
+
