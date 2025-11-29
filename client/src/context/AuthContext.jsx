@@ -1,5 +1,10 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+// 👉 1. Définition de l'URL de ton API (Railway ou localhost)
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+// 👉 2. On dit à axios d'utiliser cette base pour toutes ses requêtes
+axios.defaults.baseURL = API_URL;
 
 const AuthContext = createContext();
 
