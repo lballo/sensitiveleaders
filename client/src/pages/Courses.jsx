@@ -257,8 +257,24 @@ function Courses() {
           </div>
         </div>
       ) : (
-        <div className="courses-grid">
-          {courses.map((course) => {
+        {courses.length === 0 ? (
+          <div className="empty-courses">
+            <div className="empty-courses-icon">📚</div>
+            <h3>Aucun cours disponible</h3>
+            <p>Il n'y a pas encore de cours sur la plateforme.</p>
+            {canEdit && (
+              <button className="create-first-course-btn" onClick={handleCreate}>
+                <span className="create-icon">+</span>
+                Créer le premier cours
+              </button>
+            )}
+            {!canEdit && (
+              <p className="empty-message">Les cours seront bientôt disponibles.</p>
+            )}
+          </div>
+        ) : (
+          <div className="courses-grid">
+            {courses.map((course) => {
             const themeColors = {
               'Leadership': '#9c27b0',
               'Communication': '#2196f3',
@@ -349,7 +365,8 @@ function Courses() {
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
       )}
 
       {showCreateModal && (
