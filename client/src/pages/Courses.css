@@ -54,9 +54,14 @@
   box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
 }
 
-.create-button:hover {
+.create-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(156, 39, 176, 0.4);
+}
+
+.create-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .create-icon {

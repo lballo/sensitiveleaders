@@ -32,10 +32,17 @@ function Courses() {
     try {
       const response = await axios.get('/api/courses');
       console.log('Courses fetched:', response.data);
-      setCourses(response.data || []);
+      console.log('Number of courses:', response.data?.length || 0);
+      if (Array.isArray(response.data)) {
+        setCourses(response.data);
+      } else {
+        console.error('Response is not an array:', response.data);
+        setCourses([]);
+      }
     } catch (error) {
       console.error('Error fetching courses:', error);
       console.error('Error details:', error.response?.data);
+      console.error('Error status:', error.response?.status);
       setCourses([]);
     } finally {
       setLoading(false);
@@ -177,14 +184,17 @@ function Courses() {
           <span className="title-text">Formations</span>
         </h1>
         <p className="courses-subtitle">Développez vos compétences avec nos cours en ligne</p>
-        {canEdit && (
-          <div className="create-button-container">
-            <button className="create-button" onClick={handleCreate}>
-              <span className="create-icon">+</span>
-              Créer un cours
-            </button>
-          </div>
-        )}
+        <div className="create-button-container">
+          <button 
+            className="create-button" 
+            onClick={handleCreate}
+            disabled={!canEdit}
+            title={!canEdit ? 'Seuls les Administrateurs et Instructeurs peuvent créer des cours' : ''}
+          >
+            <span className="create-icon">+</span>
+            Créer un cours
+          </button>
+        </div>
       </div>
 
       {selectedCourse ? (
@@ -260,7 +270,7 @@ function Courses() {
           </div>
         </div>
       ) : (
-        courses.length === 0 ? (
+        !courses || courses.length === 0 ? (
           <div className="empty-courses">
             <div className="empty-courses-icon">📚</div>
             <h3>Aucun cours disponible</h3>
