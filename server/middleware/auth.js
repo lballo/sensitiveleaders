@@ -30,7 +30,18 @@ const requireRole = (...roles) => {
   };
 };
 
-module.exports = { authenticate, requireRole, JWT_SECRET };
+const requireInstructorOrAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  if (req.user.role !== 'Admin' && req.user.role !== 'Instructeur') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+};
+
+module.exports = { authenticate, requireRole, requireInstructorOrAdmin, JWT_SECRET };
+
 
 
 

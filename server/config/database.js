@@ -98,9 +98,14 @@ const init = () => {
     CREATE TABLE IF NOT EXISTS courses (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
+      theme TEXT NOT NULL,
       description TEXT,
-      language TEXT,
-      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+      author TEXT NOT NULL,
+      duration TEXT,
+      modules_count INTEGER DEFAULT 0,
+      instructor_id INTEGER,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (instructor_id) REFERENCES users(id)
     )
   `);
 
@@ -124,6 +129,19 @@ const init = () => {
       content TEXT,
       order_index INTEGER NOT NULL,
       FOREIGN KEY (module_id) REFERENCES modules(id)
+    )
+  `);
+
+  // Course registrations table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS course_registrations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      course_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (course_id) REFERENCES courses(id),
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      UNIQUE(course_id, user_id)
     )
   `);
 

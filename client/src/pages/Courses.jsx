@@ -11,13 +11,17 @@ function Courses() {
   const [editingCourse, setEditingCourse] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
+    theme: '',
     description: '',
-    language: '',
+    author: '',
+    duration: '',
     modules: [],
   });
   const [loading, setLoading] = useState(true);
 
   const isAdmin = user?.role === 'Admin';
+  const isInstructor = user?.role === 'Instructeur';
+  const canEdit = isAdmin || isInstructor;
 
   useEffect(() => {
     fetchCourses();
@@ -38,8 +42,10 @@ function Courses() {
     setEditingCourse(null);
     setFormData({
       title: '',
+      theme: '',
       description: '',
-      language: '',
+      author: user ? `${user.firstName} ${user.lastName}` : '',
+      duration: '',
       modules: [],
     });
     setShowCreateModal(true);
@@ -49,8 +55,10 @@ function Courses() {
     setEditingCourse(course);
     setFormData({
       title: course.title,
+      theme: course.theme || '',
       description: course.description || '',
-      language: course.language || '',
+      author: course.author || '',
+      duration: course.duration || '',
       modules: course.modules || [],
     });
     setShowCreateModal(true);
@@ -131,6 +139,26 @@ function Courses() {
     setFormData({ ...formData, modules: newModules });
   };
 
+  const handleRegister = async (courseId) => {
+    try {
+      await axios.post(`/api/courses/${courseId}/register`);
+      fetchCourses();
+    } catch (error) {
+      console.error('Error registering for course:', error);
+      alert('Erreur lors de l\'inscription');
+    }
+  };
+
+  const handleUnregister = async (courseId) => {
+    try {
+      await axios.delete(`/api/courses/${courseId}/register`);
+      fetchCourses();
+    } catch (error) {
+      console.error('Error unregistering from course:', error);
+      alert('Erreur lors de la désinscription');
+    }
+  };
+
   if (loading) {
     return <div className="loading">Chargement...</div>;
   }
@@ -142,7 +170,7 @@ function Courses() {
           <span className="title-icon">🎓</span>
           <span className="title-text">Cours</span>
         </h1>
-        {isAdmin && (
+        {canEdit && (
           <button className="create-button" onClick={handleCreate}>
             + Créer un cours
           </button>
@@ -158,8 +186,33 @@ function Courses() {
           {selectedCourse.description && (
             <p className="course-description">{selectedCourse.description}</p>
           )}
-          {selectedCourse.language && (
-            <div className="course-language">Langue: {selectedCourse.language}</div>
+          {selectedCourse.theme && (
+            <div className="course-theme">Thématique: {selectedCourse.theme}</div>
+          )}
+          {selectedCourse.author && (
+            <div className="course-author">Auteur: {selectedCourse.author}</div>
+          )}
+          {selectedCourse.duration && (
+            <div className="course-duration">Durée: {selectedCourse.duration}</div>
+          )}
+          <div className="course-modules-count">
+            {selectedCourse.modules?.length || 0} module(s)
+          </div>
+          
+          {selectedCourse.user_registered ? (
+            <button
+              className="unregister-btn"
+              onClick={() => handleUnregister(selectedCourse.id)}
+            >
+              Se désinscrire
+            </button>
+          ) : (
+            <button
+              className="register-btn"
+              onClick={() => handleRegister(selectedCourse.id)}
+            >
+              S'inscrire au cours
+            </button>
           )}
 
           <div className="modules-list">
@@ -202,7 +255,7 @@ function Courses() {
             <div key={course.id} className="course-card">
               <div className="course-header">
                 <h3 className="course-title">{course.title}</h3>
-                {isAdmin && (
+                {canEdit && (isAdmin || course.instructor_id === user?.id) && (
                   <div className="course-actions">
                     <button
                       className="edit-btn"
@@ -221,21 +274,50 @@ function Courses() {
                   </div>
                 )}
               </div>
+              {course.theme && (
+                <div className="course-theme">Thématique: {course.theme}</div>
+              )}
               {course.description && (
                 <div className="course-description">{course.description}</div>
               )}
-              {course.language && (
-                <div className="course-language">Langue: {course.language}</div>
+              {course.author && (
+                <div className="course-author">Auteur: {course.author}</div>
+              )}
+              {course.duration && (
+                <div className="course-duration">Durée: {course.duration}</div>
               )}
               <div className="course-modules-count">
-                {course.modules?.length || 0} module(s)
+                {course.modules_count || course.modules?.length || 0} module(s)
               </div>
-              <button
-                className="view-course-btn"
-                onClick={() => setSelectedCourse(course)}
-              >
-                Voir le cours
-              </button>
+              <div className="course-actions-footer">
+                <button
+                  className="view-course-btn"
+                  onClick={() => setSelectedCourse(course)}
+                >
+                  Voir le cours
+                </button>
+                {course.user_registered ? (
+                  <button
+                    className="unregister-btn-small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUnregister(course.id);
+                    }}
+                  >
+                    Se désinscrire
+                  </button>
+                ) : (
+                  <button
+                    className="register-btn-small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRegister(course.id);
+                    }}
+                  >
+                    S'inscrire
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -256,20 +338,47 @@ function Courses() {
                 />
               </div>
               <div className="form-group">
+                <label>Thématique *</label>
+                <select
+                  value={formData.theme}
+                  onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
+                  required
+                >
+                  <option value="">Sélectionner une thématique</option>
+                  <option value="Leadership">Leadership</option>
+                  <option value="Communication">Communication</option>
+                  <option value="Intelligence émotionnelle">Intelligence émotionnelle</option>
+                  <option value="Développement personnel">Développement personnel</option>
+                  <option value="Gestion d'équipe">Gestion d'équipe</option>
+                  <option value="Autre">Autre</option>
+                </select>
+              </div>
+              <div className="form-group">
                 <label>Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows="3"
+                  placeholder="Description du cours..."
                 />
               </div>
               <div className="form-group">
-                <label>Langue</label>
+                <label>Auteur *</label>
                 <input
                   type="text"
-                  value={formData.language}
-                  onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                  placeholder="Français"
+                  value={formData.author}
+                  onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                  required
+                  placeholder="Nom de l'auteur"
+                />
+              </div>
+              <div className="form-group">
+                <label>Durée</label>
+                <input
+                  type="text"
+                  value={formData.duration}
+                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                  placeholder="Ex: 2h, 5 jours, 3 semaines..."
                 />
               </div>
 
@@ -319,7 +428,7 @@ function Courses() {
                             className="content-type-select"
                           >
                             <option value="text">Texte</option>
-                            <option value="image">Image (URL)</option>
+                            <option value="image">Photo (URL)</option>
                             <option value="video">Vidéo (URL)</option>
                             <option value="audio">Audio (URL)</option>
                             <option value="embed">Embed (HTML)</option>
@@ -368,6 +477,7 @@ function Courses() {
 }
 
 export default Courses;
+
 
 
 
