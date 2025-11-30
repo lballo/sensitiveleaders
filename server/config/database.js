@@ -102,6 +102,7 @@ const init = () => {
       description TEXT,
       author TEXT NOT NULL,
       duration TEXT,
+      level TEXT DEFAULT 'Débutant',
       modules_count INTEGER DEFAULT 0,
       instructor_id INTEGER,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,

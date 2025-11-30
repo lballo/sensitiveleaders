@@ -9,6 +9,7 @@ router.get('/', authenticate, (req, res) => {
   db.all(
     `SELECT c.*, u.firstName as instructor_firstName, u.lastName as instructor_lastName,
      (SELECT COUNT(*) FROM modules WHERE course_id = c.id) as modules_count,
+     (SELECT COUNT(*) FROM course_registrations WHERE course_id = c.id) as registrations_count,
      (SELECT COUNT(*) FROM course_registrations WHERE course_id = c.id AND user_id = ?) as user_registered
      FROM courses c
      LEFT JOIN users u ON c.instructor_id = u.id
@@ -118,7 +119,7 @@ router.get('/:id', authenticate, (req, res) => {
 
 // Create course (Admin or Instructeur)
 router.post('/', authenticate, requireInstructorOrAdmin, (req, res) => {
-  const { title, theme, description, author, duration, modules } = req.body;
+  const { title, theme, description, author, duration, level, modules } = req.body;
   const currentUserId = req.user.id;
   const currentUserRole = req.user.role;
 
@@ -130,8 +131,8 @@ router.post('/', authenticate, requireInstructorOrAdmin, (req, res) => {
   const modulesCount = modules && modules.length > 0 ? modules.length : 0;
 
   db.run(
-    'INSERT INTO courses (title, theme, description, author, duration, modules_count, instructor_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [title, theme, description, author, duration, modulesCount, instructorId],
+    'INSERT INTO courses (title, theme, description, author, duration, level, modules_count, instructor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [title, theme, description, author, duration, level || 'Débutant', modulesCount, instructorId],
     function(err) {
       if (err) {
         return res.status(500).json({ error: err.message });
@@ -264,7 +265,7 @@ router.post('/', authenticate, requireInstructorOrAdmin, (req, res) => {
 // Update course (Admin or course instructor)
 router.put('/:id', authenticate, requireInstructorOrAdmin, (req, res) => {
   const courseId = req.params.id;
-  const { title, theme, description, author, duration, modules } = req.body;
+  const { title, theme, description, author, duration, level, modules } = req.body;
   const currentUserId = req.user.id;
   const currentUserRole = req.user.role;
 
@@ -284,8 +285,8 @@ router.put('/:id', authenticate, requireInstructorOrAdmin, (req, res) => {
     const modulesCount = modules && modules.length > 0 ? modules.length : 0;
 
     db.run(
-      'UPDATE courses SET title = ?, theme = ?, description = ?, author = ?, duration = ?, modules_count = ? WHERE id = ?',
-      [title, theme, description, author, duration, modulesCount, courseId],
+      'UPDATE courses SET title = ?, theme = ?, description = ?, author = ?, duration = ?, level = ?, modules_count = ? WHERE id = ?',
+      [title, theme, description, author, duration, level || 'Débutant', modulesCount, courseId],
       function(err) {
         if (err) {
           return res.status(500).json({ error: err.message });
