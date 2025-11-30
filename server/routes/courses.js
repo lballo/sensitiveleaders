@@ -23,6 +23,12 @@ router.get('/', authenticate, (req, res) => {
       // Get modules for each course
       const coursesWithModules = courses.map(course => {
         return new Promise((resolve) => {
+          // If no modules, resolve immediately with empty array
+          if (!course.id) {
+            resolve({ ...course, modules: [] });
+            return;
+          }
+
           db.all(
             `SELECT m.*, 
                     (SELECT COUNT(*) FROM content_blocks WHERE module_id = m.id) as content_count
@@ -32,9 +38,15 @@ router.get('/', authenticate, (req, res) => {
             [course.id],
             (err, modules) => {
               if (err) {
+                console.error('Error fetching modules:', err);
                 resolve({ ...course, modules: [] });
               } else {
                 // Get content blocks for each module
+                if (!modules || modules.length === 0) {
+                  resolve({ ...course, modules: [] });
+                  return;
+                }
+
                 const modulesWithContent = modules.map(module => {
                   return new Promise((resolve) => {
                     db.all(
@@ -42,9 +54,10 @@ router.get('/', authenticate, (req, res) => {
                       [module.id],
                       (err, contentBlocks) => {
                         if (err) {
+                          console.error('Error fetching content blocks:', err);
                           resolve({ ...module, contentBlocks: [] });
                         } else {
-                          resolve({ ...module, contentBlocks });
+                          resolve({ ...module, contentBlocks: contentBlocks || [] });
                         }
                       }
                     );
@@ -52,7 +65,10 @@ router.get('/', authenticate, (req, res) => {
                 });
 
                 Promise.all(modulesWithContent).then(results => {
-                  resolve({ ...course, modules: results });
+                  resolve({ ...course, modules: results || [] });
+                }).catch(err => {
+                  console.error('Error in Promise.all modules:', err);
+                  resolve({ ...course, modules: [] });
                 });
               }
             }
@@ -61,7 +77,11 @@ router.get('/', authenticate, (req, res) => {
       });
 
       Promise.all(coursesWithModules).then(results => {
-        res.json(results);
+        console.log('Sending courses:', results.length);
+        res.json(results || []);
+      }).catch(err => {
+        console.error('Error in Promise.all courses:', err);
+        res.json(courses || []);
       });
     }
   );

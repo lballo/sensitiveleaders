@@ -31,9 +31,12 @@ function Courses() {
   const fetchCourses = async () => {
     try {
       const response = await axios.get('/api/courses');
-      setCourses(response.data);
+      console.log('Courses fetched:', response.data);
+      setCourses(response.data || []);
     } catch (error) {
       console.error('Error fetching courses:', error);
+      console.error('Error details:', error.response?.data);
+      setCourses([]);
     } finally {
       setLoading(false);
     }
@@ -257,7 +260,7 @@ function Courses() {
           </div>
         </div>
       ) : (
-        {courses.length === 0 ? (
+        courses.length === 0 ? (
           <div className="empty-courses">
             <div className="empty-courses-icon">📚</div>
             <h3>Aucun cours disponible</h3>
