@@ -292,6 +292,7 @@ function Courses() {
                 'Leadership': '#9c27b0',
                 'Communication': '#2196f3',
                 'Intelligence émotionnelle': '#e91e63',
+                'Bien-être': '#e91e63',
                 'Développement personnel': '#ff9800',
                 'Gestion d\'équipe': '#4caf50',
                 'Autre': '#9e9e9e',
