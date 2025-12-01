@@ -288,98 +288,98 @@ function Courses() {
         ) : (
           <div className="courses-grid">
             {courses.map((course) => {
-            const themeColors = {
-              'Leadership': '#9c27b0',
-              'Communication': '#2196f3',
-              'Intelligence émotionnelle': '#e91e63',
-              'Développement personnel': '#ff9800',
-              'Gestion d\'équipe': '#4caf50',
-              'Autre': '#9e9e9e',
-            };
-            const headerColor = themeColors[course.theme] || '#9c27b0';
-            const registeredCount = course.registrations_count || 0;
-            
-            return (
-              <div key={course.id} className="course-card">
-                <div className="course-card-header" style={{ backgroundColor: headerColor }}>
-                  <span className="book-icon">📖</span>
-                  <span className="level-badge">{course.level || 'Débutant'}</span>
+              const themeColors = {
+                'Leadership': '#9c27b0',
+                'Communication': '#2196f3',
+                'Intelligence émotionnelle': '#e91e63',
+                'Développement personnel': '#ff9800',
+                'Gestion d\'équipe': '#4caf50',
+                'Autre': '#9e9e9e',
+              };
+              const headerColor = themeColors[course.theme] || '#9c27b0';
+              const registeredCount = course.registrations_count || 0;
+              
+              return (
+                <div key={course.id} className="course-card">
+                  <div className="course-card-header" style={{ backgroundColor: headerColor }}>
+                    <span className="book-icon">📖</span>
+                    <span className="level-badge">{course.level || 'Débutant'}</span>
+                  </div>
+                  <div className="course-card-body">
+                    <div className="course-category-tag" style={{ backgroundColor: headerColor + '20', color: headerColor }}>
+                      {course.theme?.toUpperCase() || 'COURS'}
+                    </div>
+                    <h3 className="course-title">{course.title}</h3>
+                    <p className="course-description">
+                      {course.description ? (course.description.length > 100 ? course.description.substring(0, 100) + '...' : course.description) : 'Aucune description'}
+                    </p>
+                    <div className="course-details">
+                      <div className="course-detail-item">
+                        <span className="detail-icon">🕐</span>
+                        <span>{course.duration || 'N/A'}</span>
+                      </div>
+                      <div className="course-detail-item">
+                        <span className="detail-icon">📚</span>
+                        <span>{course.modules_count || course.modules?.length || 0} modules</span>
+                      </div>
+                      <div className="course-detail-item">
+                        <span className="detail-icon">👥</span>
+                        <span>{registeredCount} participant{registeredCount > 1 ? 's' : ''}</span>
+                      </div>
+                    </div>
+                    <div className="course-instructor">
+                      <div className="instructor-avatar">
+                        {course.author?.[0]?.toUpperCase() || 'A'}
+                      </div>
+                      <span className="instructor-name">{course.author || 'Auteur inconnu'}</span>
+                    </div>
+                    <div className="course-actions-footer">
+                      <button
+                        className="view-btn"
+                        onClick={() => setSelectedCourse(course)}
+                      >
+                        <span className="action-icon">👁️</span>
+                        Voir
+                      </button>
+                      {canEdit && (isAdmin || course.instructor_id === user?.id) && (
+                        <button
+                          className="edit-btn-action"
+                          onClick={() => handleEdit(course)}
+                        >
+                          <span className="action-icon">✏️</span>
+                          Modifier
+                        </button>
+                      )}
+                      {course.user_registered ? (
+                        <button
+                          className="registered-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUnregister(course.id);
+                          }}
+                        >
+                          <span className="action-icon">✓</span>
+                          Inscrit
+                        </button>
+                      ) : (
+                        <button
+                          className="register-btn-action"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRegister(course.id);
+                          }}
+                          style={{ backgroundColor: headerColor }}
+                        >
+                          S'inscrire
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="course-card-body">
-                  <div className="course-category-tag" style={{ backgroundColor: headerColor + '20', color: headerColor }}>
-                    {course.theme?.toUpperCase() || 'COURS'}
-                  </div>
-                  <h3 className="course-title">{course.title}</h3>
-                  <p className="course-description">
-                    {course.description ? (course.description.length > 100 ? course.description.substring(0, 100) + '...' : course.description) : 'Aucune description'}
-                  </p>
-                  <div className="course-details">
-                    <div className="course-detail-item">
-                      <span className="detail-icon">🕐</span>
-                      <span>{course.duration || 'N/A'}</span>
-                    </div>
-                    <div className="course-detail-item">
-                      <span className="detail-icon">📚</span>
-                      <span>{course.modules_count || course.modules?.length || 0} modules</span>
-                    </div>
-                    <div className="course-detail-item">
-                      <span className="detail-icon">👥</span>
-                      <span>{registeredCount} participant{registeredCount > 1 ? 's' : ''}</span>
-                    </div>
-                  </div>
-                  <div className="course-instructor">
-                    <div className="instructor-avatar">
-                      {course.author?.[0]?.toUpperCase() || 'A'}
-                    </div>
-                    <span className="instructor-name">{course.author || 'Auteur inconnu'}</span>
-                  </div>
-                  <div className="course-actions-footer">
-                    <button
-                      className="view-btn"
-                      onClick={() => setSelectedCourse(course)}
-                    >
-                      <span className="action-icon">👁️</span>
-                      Voir
-                    </button>
-                    {canEdit && (isAdmin || course.instructor_id === user?.id) && (
-                      <button
-                        className="edit-btn-action"
-                        onClick={() => handleEdit(course)}
-                      >
-                        <span className="action-icon">✏️</span>
-                        Modifier
-                      </button>
-                    )}
-                    {course.user_registered ? (
-                      <button
-                        className="registered-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUnregister(course.id);
-                        }}
-                      >
-                        <span className="action-icon">✓</span>
-                        Inscrit
-                      </button>
-                    ) : (
-                      <button
-                        className="register-btn-action"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRegister(course.id);
-                        }}
-                        style={{ backgroundColor: headerColor }}
-                      >
-                        S'inscrire
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
           </div>
-        )}
+        )
       )}
 
       {showCreateModal && (
